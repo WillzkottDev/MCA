@@ -31,6 +31,21 @@
     .count{white-space:nowrap;background:#f1f4f8;border:1px solid #e1e7ef;padding:10px 13px;border-radius:999px;font-weight:800;font-size:13px;}
     .mode{white-space:nowrap;padding:10px 13px;border-radius:999px;font-weight:800;font-size:12px;background:#eef7ff;color:#0b619d;border:1px solid #cfe8fb;}
     .lock-btn{border:0;background:#222b38;color:#fff;border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer;}
+    .add-btn{border:0;background:#0e6caf;color:#fff;border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer;white-space:nowrap;}
+    .add-panel{display:none;padding:18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fbfdff 0%,#f5f9fc 100%);}
+    .add-panel.open{display:block}
+    .add-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:14px}
+    .add-head h2{margin:0;font-size:19px}
+    .add-head p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .add-grid{display:grid;grid-template-columns:1.5fr 1fr .7fr 1.25fr 1fr 1.35fr 1.6fr auto;gap:10px;align-items:end}
+    .add-field label{display:block;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:#596579;margin:0 0 5px}
+    .add-field input,.add-field textarea{width:100%;border:1px solid #ced7e2;border-radius:9px;padding:10px;font:inherit;background:#fff;outline:none}
+    .add-field input:focus,.add-field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(14,108,175,.1)}
+    .add-field textarea{min-height:42px;max-height:100px;resize:vertical}
+    .add-submit{border:0;border-radius:9px;background:linear-gradient(135deg,#0e6caf,#1386d4);color:#fff;padding:11px 15px;font-weight:900;cursor:pointer;min-height:42px}
+    .add-submit:disabled{opacity:.55;cursor:wait}
+    .manual-tag{display:inline-block;margin-left:7px;padding:2px 6px;border-radius:999px;background:#eaf5fd;color:#0b619d;font-size:9px;font-weight:900;letter-spacing:.02em;vertical-align:middle}
+
     .table-wrap{overflow:auto;max-height:calc(100vh - 235px);min-height:430px;scrollbar-gutter:stable;}
     table{border-collapse:separate;border-spacing:0;width:100%;min-width:1420px;font-size:14px;}
     thead th{position:sticky;top:0;z-index:10;background:#172033;color:#fff;padding:13px 12px;text-align:left;border-right:1px solid rgba(255,255,255,.09);font-size:12px;text-transform:uppercase;letter-spacing:.045em;box-shadow:0 2px 0 rgba(0,0,0,.08);}
@@ -67,6 +82,7 @@
       .shell{padding:14px 10px 20px} .topbar{align-items:flex-start} .top-logo{width:125px}
       .title-wrap p{font-size:13px} .controls{flex-wrap:wrap} .search{flex-basis:100%}
       .table-wrap{max-height:calc(100vh - 255px)} .mode{display:none} .lock-form{flex-direction:column} .lock-form button{padding:13px}
+      .add-grid{grid-template-columns:1fr} .add-head{flex-direction:column} .add-submit{width:100%}
     }
   </style>
 </head>
@@ -90,7 +106,7 @@
     <header class="topbar">
       <div class="title-wrap">
         <h1>Directorio · <span>Misión Chile Antofagasta</span></h1>
-        <p>344 misioneros · 2011–2015 · completa tus datos de contacto y deja un saludo.</p>
+        <p id="subtitle">344 misioneros base · 2011–2015 · completa tus datos de contacto y deja un saludo.</p>
       </div>
       <img class="top-logo" src="logo-mca.webp" alt="Logo Misión Chile Antofagasta">
     </header>
@@ -103,8 +119,29 @@
         </div>
         <span id="resultCount" class="count">344 misioneros</span>
         <span id="mode" class="mode">Conectando…</span>
+        <button id="addBtn" class="add-btn" type="button">＋ Agregar misionero</button>
         <button id="lockBtn" class="lock-btn" type="button">Bloquear</button>
       </div>
+
+
+      <section id="addPanel" class="add-panel" aria-label="Agregar misionero manualmente">
+        <div class="add-head">
+          <div>
+            <h2>Agregar misionero que no aparece en el listado</h2>
+            <p>El nuevo registro quedará guardado en D1 y aparecerá inmediatamente en el buscador y en el directorio para todos.</p>
+          </div>
+        </div>
+        <form id="addForm" class="add-grid" autocomplete="off">
+          <div class="add-field"><label for="newName">Nombre completo *</label><input id="newName" required maxlength="160" placeholder="Apellido, Nombre"></div>
+          <div class="add-field"><label for="newCountry">País *</label><input id="newCountry" required maxlength="100" placeholder="Chile"></div>
+          <div class="add-field"><label for="newYear">Año *</label><input id="newYear" required type="number" min="1900" max="2100" inputmode="numeric" placeholder="2013"></div>
+          <div class="add-field"><label for="newEmail">Correo</label><input id="newEmail" type="email" maxlength="180" placeholder="correo@ejemplo.com"></div>
+          <div class="add-field"><label for="newPhone">Teléfono</label><input id="newPhone" type="tel" maxlength="80" placeholder="+56 9 …"></div>
+          <div class="add-field"><label for="newSocial">Facebook / Instagram</label><input id="newSocial" maxlength="240" placeholder="@usuario o enlace"></div>
+          <div class="add-field"><label for="newMessage">Comentario / saludo</label><textarea id="newMessage" maxlength="1200" placeholder="Un saludo, recuerdo o comentario…"></textarea></div>
+          <button id="addSubmit" class="add-submit" type="submit">Agregar</button>
+        </form>
+      </section>
 
       <div id="tableWrap" class="table-wrap">
         <table aria-label="Directorio de misioneros">
@@ -124,7 +161,7 @@
         </table>
         <div id="empty" class="empty">No encontramos nombres con esa búsqueda.</div>
       </div>
-      <div class="footer-note">Los encabezados permanecen visibles al desplazarte por el listado. Los datos se guardan en Cloudflare D1 y quedan disponibles para todos los exmisioneros que accedan al directorio.</div>
+      <div class="footer-note">Los encabezados permanecen visibles al desplazarte por el listado. Los datos y los misioneros agregados manualmente se guardan en Cloudflare D1 y quedan disponibles para todos los exmisioneros que accedan al directorio.</div>
     </section>
   </main>
   <div id="toast" class="toast"></div>
@@ -133,11 +170,23 @@
 const ROSTER=[{"name":"Acevedo, Jonathan Andrés","country":"Chile","year":2012,"id":1},{"name":"Albornoz, Yamila Rut","country":"Argentina","year":2014,"id":2},{"name":"Alfonso, Justino Andrés","country":"Paraguay","year":2012,"id":3},{"name":"Alvarez, Odett","country":"Bolivia","year":2014,"id":4},{"name":"Alvial, Juan Pablo","country":"Chile","year":2012,"id":5},{"name":"Angus, Steven James","country":"Estados Unidos","year":2012,"id":6},{"name":"Aparicio, Andres Felipe","country":"Colombia","year":2013,"id":7},{"name":"Araneda, Ivan Andres","country":"Chile","year":2014,"id":8},{"name":"Araya, Felipe Jacob","country":"Chile","year":2013,"id":9},{"name":"Arriaga, Wendy Melissa","country":"Perú","year":2011,"id":10},{"name":"Ascencio, Juan Pablo","country":"Chile","year":2011,"id":11},{"name":"Autelli, Juan Manuel","country":"Chile","year":2014,"id":12},{"name":"Aves, Omar Khalil","country":"Argentina","year":2014,"id":13},{"name":"Barnett, Jeshua Michael","country":"Estados Unidos","year":2012,"id":14},{"name":"Barrios, Jorge Antonio","country":"Guatemala","year":2012,"id":15},{"name":"Bernal, Sebastian","country":"Colombia","year":2014,"id":16},{"name":"Berrett, Jacob Porter","country":"Estados Unidos","year":2014,"id":17},{"name":"Bird, Corey Bennett","country":"Estados Unidos","year":2014,"id":18},{"name":"Bishop, Bradyn Matthew","country":"Estados Unidos","year":2012,"id":19},{"name":"Boulanger, Jonathan Martin","country":"Perú","year":2015,"id":20},{"name":"Bradley, Kyle Staker","country":"Estados Unidos","year":2013,"id":21},{"name":"Braithwaite, Garret Brian","country":"Estados Unidos","year":2011,"id":22},{"name":"Brake, Adam Kendric","country":"Estados Unidos","year":2012,"id":23},{"name":"Brewster, BreAnna Eileen","country":"Estados Unidos","year":2014,"id":24},{"name":"Broadbent, David Grant","country":"Estados Unidos","year":2011,"id":25},{"name":"Brooks, Sawyer Alan","country":"Estados Unidos","year":2014,"id":26},{"name":"Brown, Jonathan Robert","country":"Estados Unidos","year":2011,"id":27},{"name":"Burk, Bonnie Jean","country":"Estados Unidos","year":2012,"id":28},{"name":"Burnett, McKay Ivan","country":"Estados Unidos","year":2013,"id":29},{"name":"Burnett, Tela Ann","country":"Estados Unidos","year":2012,"id":30},{"name":"Butler, Katherine Lynn","country":"Estados Unidos","year":2012,"id":31},{"name":"Cabrera, Joshua Moroni","country":"Estados Unidos","year":2014,"id":32},{"name":"Cabrera, Luis Alfredo","country":"Perú","year":2015,"id":33},{"name":"Caceres, Roger Percy","country":"Perú","year":2015,"id":34},{"name":"Calderon, Adrian Benjamin","country":"Chile","year":2014,"id":35},{"name":"Calderon, Bernabe","country":"Perú","year":2014,"id":36},{"name":"Calderon, David Alejandro","country":"Ecuador","year":2014,"id":37},{"name":"Camargo, Leonardo Jose","country":"Colombia","year":2012,"id":38},{"name":"Canales, Yuri Lizbet","country":"Perú","year":2014,"id":39},{"name":"Candia, Carla Andrea","country":"Chile","year":2014,"id":40},{"name":"Cardozo, David Felipe","country":"Colombia","year":2012,"id":41},{"name":"Cardozo, Ruben Martin","country":"Argentina","year":2014,"id":42},{"name":"Caris, Sebastian Ignacio","country":"Chile","year":2012,"id":43},{"name":"Carmona, Kevin Eduar","country":"Perú","year":2014,"id":44},{"name":"Carranza, Analia Soledad","country":"Argentina","year":2014,"id":45},{"name":"Casas, Jean Carlos","country":"Perú","year":2015,"id":46},{"name":"Castañeda, Luis Rudy","country":"Chile","year":2011,"id":47},{"name":"Castillo, German Emilio","country":"Colombia","year":2013,"id":48},{"name":"Catalán, Eduardo Andrés","country":"Chile","year":2011,"id":49},{"name":"Catron, Christina Ross","country":"Reino Unido","year":2014,"id":50},{"name":"Cazier, Jacob Perry","country":"Estados Unidos","year":2015,"id":51},{"name":"Ceballos, Gonzalo Jared Benjamín","country":"Chile","year":2013,"id":52},{"name":"Chacon, Luis Guillermo","country":"Colombia","year":2014,"id":53},{"name":"Chavarria, Adrian Albán","country":"Costa Rica","year":2011,"id":54},{"name":"Chén, Evelyn Azucena","country":"Guatemala","year":2012,"id":55},{"name":"Chota, Noble Adrian","country":"Perú","year":2014,"id":56},{"name":"Christensen, Benjamin Mark","country":"Estados Unidos","year":2011,"id":57},{"name":"Christensen, Logan Reid","country":"Estados Unidos","year":2012,"id":58},{"name":"Christensen, Seth Alexander","country":"Estados Unidos","year":2013,"id":59},{"name":"Christianson, Kristjan Kane","country":"Estados Unidos","year":2014,"id":60},{"name":"Church, Ryan Braden","country":"Estados Unidos","year":2014,"id":61},{"name":"Clark, Timothy Jordan","country":"Estados Unidos","year":2012,"id":62},{"name":"Clark, Van Matthew","country":"Estados Unidos","year":2014,"id":63},{"name":"Cluff, Bethany Nichole","country":"Estados Unidos","year":2014,"id":64},{"name":"Coats, Nathan Gerald","country":"Estados Unidos","year":2013,"id":65},{"name":"Colman, Elias Rafael","country":"Paraguay","year":2014,"id":66},{"name":"Condori, Emmanuel Fernando","country":"Argentina","year":2013,"id":67},{"name":"Congleton, Andrew Reed","country":"Estados Unidos","year":2014,"id":68},{"name":"Contreras, Elvis Ivan","country":"Bolivia","year":2015,"id":69},{"name":"Contreras, Ivan","country":"Colombia","year":2015,"id":70},{"name":"Coppins, Kamian Leigh","country":"Estados Unidos","year":2011,"id":71},{"name":"Cordova, Brian Rodrigo","country":"Chile","year":2013,"id":72},{"name":"Córdova, Diego Elias","country":"Chile","year":2014,"id":73},{"name":"Correa, Alvaro Martin","country":"Uruguay","year":2014,"id":74},{"name":"Cram, Jennilyn","country":"Estados Unidos","year":2013,"id":75},{"name":"Crossman, Jare Ray","country":"Estados Unidos","year":2014,"id":76},{"name":"Cruz, Leonardo","country":"Colombia","year":2011,"id":77},{"name":"Cubillos, Carlos Andres","country":"Colombia","year":2014,"id":78},{"name":"Cubillos, Johnnathan René","country":"Chile","year":2014,"id":79},{"name":"Cuevas, Cristobal Andrés","country":"Chile","year":2012,"id":80},{"name":"De La Hoz, Hugo Alberto","country":"Colombia","year":2015,"id":81},{"name":"De Paoli, Lucas Fabian","country":"Argentina","year":2013,"id":82},{"name":"Deck, Cristian Javier","country":"Argentina","year":2012,"id":83},{"name":"DeGraw, Taylor Christiansen","country":"Estados Unidos","year":2014,"id":84},{"name":"Delgado, Ana Cecilia","country":"Perú","year":2014,"id":85},{"name":"DeTrinidad, Humberto Josué","country":"Nicaragua","year":2011,"id":86},{"name":"Diaz, Patricio Daniel","country":"Chile","year":2014,"id":87},{"name":"Dixon, Bryant James","country":"Estados Unidos","year":2014,"id":88},{"name":"Duerden, Jonathan Thomas","country":"Estados Unidos","year":2011,"id":89},{"name":"Edwards, Jordon Palmer","country":"Estados Unidos","year":2012,"id":90},{"name":"Eggleston, Adam Scott","country":"Estados Unidos","year":2012,"id":91},{"name":"Ensign, Alan Grant","country":"Estados Unidos","year":2011,"id":92},{"name":"Erwin, Dustin Lynn","country":"Estados Unidos","year":2011,"id":93},{"name":"Farnworth, Zachary Tyler","country":"Estados Unidos","year":2014,"id":94},{"name":"Farr, Jonathon Massey","country":"Estados Unidos","year":2014,"id":95},{"name":"Flores, Darwin Joel","country":"Honduras","year":2013,"id":96},{"name":"Fowkes, Jared Brett","country":"Estados Unidos","year":2012,"id":97},{"name":"Frost, Sydni","country":"Estados Unidos","year":2014,"id":98},{"name":"Galovich, Tyson Allen","country":"Estados Unidos","year":2014,"id":99},{"name":"Galvan, Emanuel Enrique","country":"Argentina","year":2015,"id":100},{"name":"Galvez, Cosme Yahir","country":"México","year":2015,"id":101},{"name":"Garbin, Maria Fe","country":"Perú","year":2013,"id":102},{"name":"Garcia, Addy Elizabeth","country":"México","year":2014,"id":103},{"name":"Garcia, Carol Patricia","country":"Honduras","year":2011,"id":104},{"name":"Garcia, Damian Lee","country":"Estados Unidos","year":2013,"id":105},{"name":"Garcia, Eduard Javier","country":"Perú","year":2014,"id":106},{"name":"García, Jhon Anderson","country":"Perú","year":2014,"id":107},{"name":"Garcia, Jorge Manuel","country":"Estados Unidos","year":2012,"id":108},{"name":"Garcia, Manuel Orlando","country":"México","year":2014,"id":109},{"name":"Garrido, Carlos Alberto Hernan","country":"Chile","year":2012,"id":110},{"name":"Garrido, Ezequiel David","country":"Argentina","year":2013,"id":111},{"name":"Garrido, Lenin Fidel","country":"Chile","year":2014,"id":112},{"name":"Genovez, Saúl Alexander","country":"El Salvador","year":2011,"id":113},{"name":"Gill, Luther Wesley","country":"Estados Unidos","year":2013,"id":114},{"name":"Gillespie, James Oliver","country":"Estados Unidos","year":2013,"id":115},{"name":"Gines, Samuel Isaac","country":"Estados Unidos","year":2015,"id":116},{"name":"Girón, Jonatan Benson","country":"El Salvador","year":2011,"id":117},{"name":"Gonzalez, Ivana Soledad","country":"Argentina","year":2013,"id":118},{"name":"Gonzalez, Leandro Martin","country":"Argentina","year":2014,"id":119},{"name":"Gonzalez, Marcos Jonathan","country":"Argentina","year":2013,"id":120},{"name":"Gorge, Adrienne Anna","country":"Estados Unidos","year":2014,"id":121},{"name":"Grawe, Samuel Montgomery","country":"Estados Unidos","year":2011,"id":122},{"name":"Gutierrez, Jose Rafael","country":"Paraguay","year":2012,"id":123},{"name":"Hales, Benjamin Sidney","country":"Estados Unidos","year":2014,"id":124},{"name":"Halvorsen, Zachary Aaron","country":"Estados Unidos","year":2012,"id":125},{"name":"Hamblin, Jake Sherwood","country":"Estados Unidos","year":2013,"id":126},{"name":"Harding, Marcus Caide","country":"Estados Unidos","year":2012,"id":127},{"name":"Hart, Landon Adams","country":"Estados Unidos","year":2014,"id":128},{"name":"Hart, Robert Laurence","country":"Chile","year":2013,"id":129},{"name":"Henrie, Colten James","country":"Estados Unidos","year":2014,"id":130},{"name":"Herbert, Tyler Duane","country":"Estados Unidos","year":2012,"id":131},{"name":"Hernandez, Kevin Alfonso","country":"Chile","year":2014,"id":132},{"name":"Hertler, Marcos","country":"Argentina","year":2013,"id":133},{"name":"Hewstone, Williams Scott","country":"Chile","year":2013,"id":134},{"name":"Hong, Isaac Mathew","country":"Estados Unidos","year":2014,"id":135},{"name":"Hotvedt, Kyle Anthony","country":"Estados Unidos","year":2015,"id":136},{"name":"Howard, Buck William","country":"Estados Unidos","year":2013,"id":137},{"name":"Howell, Jennifer","country":"Estados Unidos","year":2014,"id":138},{"name":"Hubler, Dalton McKay","country":"Estados Unidos","year":2013,"id":139},{"name":"Hughes, Skyler Morgan","country":"Estados Unidos","year":2014,"id":140},{"name":"Hunsaker, Erik Keith","country":"Estados Unidos","year":2012,"id":141},{"name":"Insauralde, Bernardo Ariel","country":"Paraguay","year":2011,"id":142},{"name":"Jensen, Jordan Bryce","country":"Estados Unidos","year":2014,"id":143},{"name":"Jensen, Taylor Robert","country":"Estados Unidos","year":2011,"id":144},{"name":"Jiménez, Francisco Javier","country":"Chile","year":2012,"id":145},{"name":"Joglar, Myrna Natalia","country":"Argentina","year":2014,"id":146},{"name":"Johnson, Taylor Sawyer","country":"Estados Unidos","year":2012,"id":147},{"name":"Keele, Derek John","country":"Estados Unidos","year":2014,"id":148},{"name":"Kennedy, Morgan Renae","country":"Estados Unidos","year":2014,"id":149},{"name":"Kennedy, Sean Douglas","country":"Estados Unidos","year":2012,"id":150},{"name":"King, Harrison Roy","country":"Estados Unidos","year":2011,"id":151},{"name":"Knowles, Austin Scott","country":"Estados Unidos","year":2014,"id":152},{"name":"Koons, Tanner Brinkerhoff","country":"Estados Unidos","year":2012,"id":153},{"name":"Lastarria, Natanael Elian","country":"Argentina","year":2014,"id":154},{"name":"Leaño, Aread","country":"Canadá","year":2012,"id":155},{"name":"LeFevre, Samantha Rose","country":"Estados Unidos","year":2014,"id":156},{"name":"León, Frank Ángel","country":"Perú","year":2011,"id":157},{"name":"Lewis, Connor Michael","country":"Estados Unidos","year":2012,"id":158},{"name":"Lindner, Lauren Joan","country":"Estados Unidos","year":2012,"id":159},{"name":"López, Josué Abel","country":"Guatemala","year":2015,"id":160},{"name":"Lopez, Ryan Antonio","country":"Estados Unidos","year":2012,"id":161},{"name":"López, Walter Jonathan","country":"El Salvador","year":2012,"id":162},{"name":"Lovell, Stephen Lee","country":"Estados Unidos","year":2012,"id":163},{"name":"Low, Caitlin Grace","country":"Estados Unidos","year":2012,"id":164},{"name":"Lucero, Nathan Forrest","country":"Estados Unidos","year":2013,"id":165},{"name":"Luna, Cindi Yamil","country":"Argentina","year":2012,"id":166},{"name":"Mallory, Bradley Cole","country":"Estados Unidos","year":2011,"id":167},{"name":"Mandujano, Saúl René","country":"Perú","year":2011,"id":168},{"name":"Mapa, Gladys Akuarina","country":"Estados Unidos","year":2013,"id":169},{"name":"Marín, Claudia Evelyn","country":"Uruguay","year":2011,"id":170},{"name":"Marin, Cristian Eduardo","country":"Chile","year":2014,"id":171},{"name":"Marroquin, Marvin Ivan","country":"Guatemala","year":2014,"id":172},{"name":"Marsee, Mathew Keith","country":"Estados Unidos","year":2014,"id":173},{"name":"Martel, Carlos Omar","country":"Honduras","year":2013,"id":174},{"name":"Martin, Cory Dewey","country":"Estados Unidos","year":2012,"id":175},{"name":"Martin, Michael Scott","country":"Estados Unidos","year":2013,"id":176},{"name":"Martinez, Alejandro Miguel","country":"El Salvador","year":2015,"id":177},{"name":"Martinez, Danny Javier","country":"Ecuador","year":2014,"id":178},{"name":"Martinez, Marcelo Bastian","country":"Chile","year":2014,"id":179},{"name":"Matias, Evelyn Marilu","country":"Perú","year":2014,"id":180},{"name":"McCaskill, Jordan Rhyse","country":"Canadá","year":2013,"id":181},{"name":"McConkie, Roger James","country":"Estados Unidos","year":2014,"id":182},{"name":"McCusker, Carson Patrick","country":"Estados Unidos","year":2014,"id":183},{"name":"Medrano, Gricel Pamela","country":"Perú","year":2013,"id":184},{"name":"Mejia, Everardo","country":"Estados Unidos","year":2011,"id":185},{"name":"Mendez, Itzel","country":"México","year":2013,"id":186},{"name":"Mendoza, Mario Noe","country":"México","year":2014,"id":187},{"name":"Meneses, Felipe Andres","country":"Chile","year":2014,"id":188},{"name":"Menghini, Analia Gisela","country":"Argentina","year":2012,"id":189},{"name":"Mikesell, Kameron Jones","country":"Estados Unidos","year":2013,"id":190},{"name":"Miner, Rebekah","country":"Estados Unidos","year":2014,"id":191},{"name":"Miranda, Yehoshua Jared","country":"Chile","year":2015,"id":192},{"name":"Mitchell, John Andrejeik","country":"Estados Unidos","year":2012,"id":193},{"name":"Molto, Lucas Alberto","country":"Argentina","year":2014,"id":194},{"name":"Montandon, Whitney Michelle","country":"Estados Unidos","year":2011,"id":195},{"name":"Montero, Miguel Angel","country":"Perú","year":2014,"id":196},{"name":"Montes, Carlos Raul","country":"El Salvador","year":2012,"id":197},{"name":"Morales, Sarahi Berenice","country":"México","year":2014,"id":198},{"name":"Moris, Lukas","country":"Chile","year":2014,"id":199},{"name":"Muñoz, Cesar Alejandro","country":"Chile","year":2014,"id":200},{"name":"Muñoz, Gabriel Matias","country":"Argentina","year":2013,"id":201},{"name":"Nalder, Aaron Ronald","country":"Canadá","year":2013,"id":202},{"name":"Negri, Max Ottoniel","country":"Perú","year":2014,"id":203},{"name":"Neumiller, Kurt Richard","country":"Estados Unidos","year":2012,"id":204},{"name":"Newman, Zachariah Allen","country":"Estados Unidos","year":2014,"id":205},{"name":"Ñique, Sheyla Katerine","country":"Perú","year":2011,"id":206},{"name":"Nobles, Giordano Amir","country":"Colombia","year":2013,"id":207},{"name":"Núñez, Ingrid Yamileth","country":"El Salvador","year":2014,"id":208},{"name":"Núñez, Maria Andrea","country":"Paraguay","year":2014,"id":209},{"name":"O'Brien, Christopher M.P.","country":"Canadá","year":2013,"id":210},{"name":"Oliva, Daniel Nicolas","country":"Chile","year":2014,"id":211},{"name":"Olivares, Jessica Francisca","country":"El Salvador","year":2011,"id":212},{"name":"Osorio, Diana Rocio","country":"México","year":2014,"id":213},{"name":"Osorio, Jason Spencer","country":"Canadá","year":2014,"id":214},{"name":"Pacheco, Andres Alberto","country":"Perú","year":2015,"id":215},{"name":"Pacheco, Harold Jhunior","country":"Perú","year":2015,"id":216},{"name":"Pack, Stephanie","country":"Estados Unidos","year":2014,"id":217},{"name":"Packard, Brent Daniel","country":"Estados Unidos","year":2014,"id":218},{"name":"Paco, German","country":"Bolivia","year":2011,"id":219},{"name":"Paez, Federico Alfredo","country":"Argentina","year":2014,"id":220},{"name":"Palomino, Jonatan","country":"Colombia","year":2015,"id":221},{"name":"Parker, Aaron Cole","country":"Estados Unidos","year":2013,"id":222},{"name":"Parra, Claudio David","country":"Chile","year":2013,"id":223},{"name":"Peck, Nathan G","country":"Estados Unidos","year":2015,"id":224},{"name":"Peralta, Roque Josue","country":"Canadá","year":2014,"id":225},{"name":"Perez, Jacob","country":"México","year":2013,"id":226},{"name":"Perez, Yeral Otoniel","country":"Nicaragua","year":2011,"id":227},{"name":"Peters, Gunnar Franklin","country":"Estados Unidos","year":2014,"id":228},{"name":"Pezzali, Ariel Misael","country":"Chile","year":2014,"id":229},{"name":"Pinto, Diego Yosimar","country":"Argentina","year":2014,"id":230},{"name":"Pope, Christopher Anthony","country":"Estados Unidos","year":2013,"id":231},{"name":"Portillo, Alondra Yasmin","country":"El Salvador","year":2011,"id":232},{"name":"Pulsipher, Cody Mack","country":"Estados Unidos","year":2012,"id":233},{"name":"Quiro, Alan Yon","country":"Argentina","year":2014,"id":234},{"name":"Quispe, Nelson Rodrigo","country":"Bolivia","year":2012,"id":235},{"name":"Ramirez, Juan David","country":"Colombia","year":2015,"id":236},{"name":"Ramírez, Rafael Ricardo","country":"Colombia","year":2012,"id":237},{"name":"Ramirez, Xochilt Cristina","country":"Nicaragua","year":2011,"id":238},{"name":"Ramos, Jesus David","country":"Ecuador","year":2012,"id":239},{"name":"Rebman, Benjamin Vaughn","country":"Estados Unidos","year":2013,"id":240},{"name":"Recinos, Enrique Rosenberg","country":"Estados Unidos","year":2011,"id":241},{"name":"Redd, Randy Dakota","country":"Estados Unidos","year":2013,"id":242},{"name":"Relei, Matthew David","country":"Estados Unidos","year":2012,"id":243},{"name":"Revireigo, Lisandro","country":"Argentina","year":2013,"id":244},{"name":"Reyes, Camila Paz","country":"Chile","year":2012,"id":245},{"name":"Richards, Austin Allan","country":"Estados Unidos","year":2014,"id":246},{"name":"Richardson, Boyd Charles","country":"Estados Unidos","year":2011,"id":247},{"name":"Richardson, Marjorie Powell","country":"Estados Unidos","year":2011,"id":248},{"name":"Richins, Amberly Dawn","country":"Estados Unidos","year":2014,"id":249},{"name":"Ricks, Jacob Dean","country":"Estados Unidos","year":2012,"id":250},{"name":"Rios, Jonatan Gabriel","country":"Argentina","year":2012,"id":251},{"name":"Rivas, Jose Luis","country":"Chile","year":2013,"id":252},{"name":"Rivas, Jose Roberto","country":"Estados Unidos","year":2013,"id":253},{"name":"Rivera, Gerson Yehomir","country":"El Salvador","year":2011,"id":254},{"name":"Rivera, Juan Manuel","country":"Argentina","year":2012,"id":255},{"name":"Roa, Marco Antonio","country":"Chile","year":2011,"id":256},{"name":"Robles, Myckool Andres","country":"Chile","year":2011,"id":257},{"name":"Rodas, Juan Carlos","country":"Guatemala","year":2014,"id":258},{"name":"Rodriguez, Hernan Gabriel","country":"Argentina","year":2014,"id":259},{"name":"Rodriguez, Ignacio","country":"Argentina","year":2014,"id":260},{"name":"Rodriguez, Ivan Felipe","country":"Colombia","year":2014,"id":261},{"name":"Rodriguez, Karen Daniela","country":"Perú","year":2014,"id":262},{"name":"Rogers, Bradley Davis","country":"Estados Unidos","year":2015,"id":263},{"name":"Rojas, Cristian Agustin","country":"Paraguay","year":2013,"id":264},{"name":"Romney, Rachelle","country":"Estados Unidos","year":2012,"id":265},{"name":"Rosevear, David J","country":"Estados Unidos","year":2014,"id":266},{"name":"Ruiz, Christopher Dairon","country":"Chile","year":2015,"id":267},{"name":"Ruiz, Elliott","country":"México","year":2014,"id":268},{"name":"Runyan, Daniel Douglas","country":"Estados Unidos","year":2014,"id":269},{"name":"Russell, Seth Andrew","country":"Estados Unidos","year":2014,"id":270},{"name":"Sabando, Carlos Ivan","country":"Chile","year":2011,"id":271},{"name":"Saldias, Simón Isaias","country":"Chile","year":2013,"id":272},{"name":"San Martin, Oliver Augusto","country":"Chile","year":2012,"id":273},{"name":"Sanchez, Julio Alfredo","country":"Guatemala","year":2015,"id":274},{"name":"Santos, Claudia Vanessa","country":"Honduras","year":2014,"id":275},{"name":"Santos, Juan Alberto","country":"Estados Unidos","year":2014,"id":276},{"name":"Sarmiento, Keith Luighi","country":"Perú","year":2015,"id":277},{"name":"Sepe, Mark Anthony","country":"Estados Unidos","year":2014,"id":278},{"name":"Severtson, Kami Lyn","country":"Estados Unidos","year":2014,"id":279},{"name":"Sharp, Brycen","country":"Estados Unidos","year":2013,"id":280},{"name":"Shields, Mitchell Daniel","country":"Estados Unidos","year":2014,"id":281},{"name":"Silva, Luis Fernando","country":"Bolivia","year":2011,"id":282},{"name":"Silvester, Tyler Jay","country":"Estados Unidos","year":2014,"id":283},{"name":"Skinner, Brandon Lee","country":"Estados Unidos","year":2014,"id":284},{"name":"Smith, Cannon Taylor","country":"Estados Unidos","year":2012,"id":285},{"name":"Smith, Cassi Ann","country":"Estados Unidos","year":2014,"id":286},{"name":"Smith, Davis Gary","country":"Estados Unidos","year":2011,"id":287},{"name":"Smith, Jorge Bryan","country":"México","year":2014,"id":288},{"name":"Smith, Taylor James","country":"Estados Unidos","year":2013,"id":289},{"name":"Solís, John Paul","country":"Estados Unidos","year":2012,"id":290},{"name":"Sorensen, Dallin Scott","country":"Estados Unidos","year":2012,"id":291},{"name":"Soto, Raul Ismael","country":"Argentina","year":2015,"id":292},{"name":"Soto, Rolando","country":"Costa Rica","year":2012,"id":293},{"name":"Spolmann, Nelson Elias","country":"Chile","year":2014,"id":294},{"name":"Stagg, Sarah Gwenda","country":"Estados Unidos","year":2014,"id":295},{"name":"Steiner, Taylor Reed","country":"Estados Unidos","year":2014,"id":296},{"name":"Stokes, Christopher Todd","country":"Estados Unidos","year":2014,"id":297},{"name":"Stone, Ryan David","country":"Estados Unidos","year":2012,"id":298},{"name":"Storts, Devin Andrew","country":"Estados Unidos","year":2013,"id":299},{"name":"Stratford, Garret Jack","country":"Estados Unidos","year":2014,"id":300},{"name":"Suarez, Junior Antonio","country":"Nicaragua","year":2013,"id":301},{"name":"Suazo, Annuar Alfredo","country":"Honduras","year":2012,"id":302},{"name":"Sunderland, Marvin Ward","country":"Canadá","year":2014,"id":303},{"name":"Swensen, William Wyatt","country":"Estados Unidos","year":2013,"id":304},{"name":"Tello, Hector Juan","country":"Perú","year":2015,"id":305},{"name":"Teuquil, Samuel Benjamin","country":"Chile","year":2013,"id":306},{"name":"Tholen, Ryan Zachary","country":"Estados Unidos","year":2014,"id":307},{"name":"Thomason, Alexander Jaymes","country":"Estados Unidos","year":2011,"id":308},{"name":"Todd, Andrew Michael","country":"Estados Unidos","year":2012,"id":309},{"name":"Torres, Ana Julissa","country":"Honduras","year":2011,"id":310},{"name":"Trávez, Maria Rebeca","country":"Ecuador","year":2011,"id":311},{"name":"Treviño, Jesus Rolando","country":"Estados Unidos","year":2013,"id":312},{"name":"Tumbaco, Yury Sara","country":"Ecuador","year":2014,"id":313},{"name":"Tuttle, Matthew Maylett","country":"Estados Unidos","year":2014,"id":314},{"name":"Tymczyszyn, Ivan Pablo","country":"Argentina","year":2014,"id":315},{"name":"Valenzuela, Jordan Mosiah","country":"Chile","year":2013,"id":316},{"name":"Vallace, Kyle Vee","country":"Estados Unidos","year":2014,"id":317},{"name":"Valle, Hernan Israel","country":"Perú","year":2013,"id":318},{"name":"Van Pelt, Ryan Dane","country":"Estados Unidos","year":2014,"id":319},{"name":"VanMeter, Eliza Ruth","country":"Estados Unidos","year":2013,"id":320},{"name":"Vargas, Horacio","country":"México","year":2014,"id":321},{"name":"Vasquez, Adolfo Andres","country":"Chile","year":2011,"id":322},{"name":"Vasquez, Alvaro Felipe","country":"Chile","year":2014,"id":323},{"name":"Vega, Emili Marla","country":"Perú","year":2014,"id":324},{"name":"Velazquez, Jorge David","country":"Argentina","year":2014,"id":325},{"name":"Venegoni, Johnas Javier","country":"Chile","year":2014,"id":326},{"name":"Vera, Eduardo Andres","country":"Ecuador","year":2013,"id":327},{"name":"Vergara, Leonardo Alonso","country":"Chile","year":2012,"id":328},{"name":"Villarroel, Spencer Kevin","country":"Chile","year":2014,"id":329},{"name":"Vineyard, Cedar Lian","country":"Estados Unidos","year":2012,"id":330},{"name":"Waite, Jacob E","country":"Estados Unidos","year":2011,"id":331},{"name":"Wall, Robert Loren","country":"Estados Unidos","year":2015,"id":332},{"name":"Warner, Christine","country":"Estados Unidos","year":2011,"id":333},{"name":"Watmough, Nathan James","country":"Canadá","year":2014,"id":334},{"name":"Wells, John Harvey","country":"Estados Unidos","year":2013,"id":335},{"name":"Whipple, Kathryn Elise","country":"Estados Unidos","year":2014,"id":336},{"name":"Wilkes, Brandon","country":"Estados Unidos","year":2012,"id":337},{"name":"Wright, Tanner James","country":"Estados Unidos","year":2014,"id":338},{"name":"Young, Ashley Elizabeth","country":"Canadá","year":2013,"id":339},{"name":"Young, Sydni","country":"Estados Unidos","year":2011,"id":340},{"name":"Zaitzeff, Mikel Jared","country":"Estados Unidos","year":2014,"id":341},{"name":"Zaracho, Carlos Daniel","country":"Argentina","year":2012,"id":342},{"name":"Zitting, Joseph Rulon","country":"Estados Unidos","year":2012,"id":343},{"name":"Zufelt, Zachary Quinn","country":"Estados Unidos","year":2012,"id":344}];
 const PASSWORD='MCA';
 let contacts={};
+let manualMissionaries=[];
 let currentPassword='';
 let storageMode='cloud';
 
 const $=s=>document.querySelector(s);
 const tbody=$('#tbody'), search=$('#search'), resultCount=$('#resultCount'), empty=$('#empty'), mode=$('#mode');
+const addPanel=$('#addPanel'), addBtn=$('#addBtn'), addForm=$('#addForm'), subtitle=$('#subtitle');
+
+function allRoster(){
+  return [...ROSTER, ...manualMissionaries.map(m=>({
+    id:100000+Number(m.id),
+    name:m.name,
+    country:m.country,
+    year:Number(m.year),
+    manual:true
+  }))].sort((a,b)=>a.name.localeCompare(b.name,'es',{sensitivity:'base'}));
+}
 
 function norm(s=''){return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
@@ -146,12 +195,18 @@ function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show'
 async function connectStorage(){
   mode.textContent='Conectando D1…';
   try{
-    const r=await fetch('/api/contacts',{headers:{'X-MCA-Password':currentPassword},cache:'no-store'});
-    if(r.status===401) throw new Error('AUTH');
-    if(!r.ok) throw new Error('API');
-    const data=await r.json();
+    const headers={'X-MCA-Password':currentPassword};
+    const [contactsRes, missionariesRes]=await Promise.all([
+      fetch('/api/contacts',{headers,cache:'no-store'}),
+      fetch('/api/missionaries',{headers,cache:'no-store'})
+    ]);
+    if(contactsRes.status===401 || missionariesRes.status===401) throw new Error('AUTH');
+    if(!contactsRes.ok || !missionariesRes.ok) throw new Error('API');
+    const contactsData=await contactsRes.json();
+    const missionariesData=await missionariesRes.json();
     contacts={};
-    for(const x of (data.records||[])) contacts[x.missionary_id]={email:x.email||'',phone:x.phone||'',social:x.social||'',message:x.message||''};
+    for(const x of (contactsData.records||[])) contacts[x.missionary_id]={email:x.email||'',phone:x.phone||'',social:x.social||'',message:x.message||''};
+    manualMissionaries=missionariesData.records||[];
     storageMode='cloud';
     mode.textContent='Cloudflare D1 · conectado';
     render();
@@ -168,13 +223,17 @@ async function connectStorage(){
 
 function render(){
   const q=norm(search.value);
-  const filtered=ROSTER.filter(r=>!q||norm(r.name).includes(q));
+  const roster=allRoster();
+  const filtered=roster.filter(r=>!q||norm(r.name).includes(q));
   resultCount.textContent=`${filtered.length} misionero${filtered.length===1?'':'s'}`;
+  subtitle.textContent=manualMissionaries.length
+    ? `${ROSTER.length} misioneros base + ${manualMissionaries.length} agregado${manualMissionaries.length===1?'':'s'} manualmente · completa tus datos y deja un saludo.`
+    : `${ROSTER.length} misioneros base · 2011–2015 · completa tus datos de contacto y deja un saludo.`;
   empty.style.display=filtered.length?'none':'block';
   tbody.innerHTML=filtered.map(r=>{
     const c=contacts[r.id]||{};
     return `<tr data-id="${r.id}">
-      <td>${esc(r.name)}</td>
+      <td>${esc(r.name)}${r.manual?'<span class="manual-tag">AGREGADO</span>':''}</td>
       <td class="country">${esc(r.country)}</td>
       <td class="year">${r.year}</td>
       <td><input class="field email" type="email" value="${esc(c.email||'')}" placeholder="correo@ejemplo.com"></td>
@@ -209,8 +268,53 @@ async function saveRow(tr){
   }
 }
 
+async function addMissionary(e){
+  e.preventDefault();
+  if(storageMode!=='cloud'){toast('D1 no está conectado.');return;}
+  const name=$('#newName').value.trim();
+  const country=$('#newCountry').value.trim();
+  const year=Number($('#newYear').value);
+  const email=$('#newEmail').value.trim();
+  const phone=$('#newPhone').value.trim();
+  const social=$('#newSocial').value.trim();
+  const message=$('#newMessage').value.trim();
+  if(!name || !country || !Number.isInteger(year)){toast('Completa nombre, país y año.');return;}
+  const already=allRoster().find(r=>norm(r.name)===norm(name) && Number(r.year)===year);
+  if(already){
+    search.value=name; render(); addPanel.classList.remove('open');
+    toast('Ese nombre y año ya aparecen en el directorio.'); return;
+  }
+  const btn=$('#addSubmit'); btn.disabled=true; btn.textContent='Agregando…';
+  try{
+    const r=await fetch('/api/missionaries',{method:'POST',headers:{'Content-Type':'application/json','X-MCA-Password':currentPassword},body:JSON.stringify({name,country,year})});
+    const data=await r.json().catch(()=>({}));
+    if(r.status===401) throw new Error('AUTH');
+    if(r.status===409) throw new Error(data.error||'Ese misionero ya fue agregado.');
+    if(!r.ok) throw new Error(data.error||'No se pudo agregar el misionero.');
+    const rec=data.record;
+    manualMissionaries.push({id:rec.id,name:rec.name,country:rec.country,year:rec.year});
+    const contactId=Number(rec.contact_id||100000+Number(rec.id));
+    if(email || phone || social || message){
+      const cr=await fetch('/api/contacts',{method:'POST',headers:{'Content-Type':'application/json','X-MCA-Password':currentPassword},body:JSON.stringify({missionary_id:contactId,email,phone,social,message})});
+      if(cr.ok) contacts[contactId]={email,phone,social,message};
+    }
+    addForm.reset(); addPanel.classList.remove('open'); search.value=rec.name; render();
+    toast('Misionero agregado al directorio ✓');
+  }catch(err){
+    if(err.message==='AUTH'){lockPage('Contraseña no autorizada por el servidor.');return;}
+    toast(err.message||'No se pudo agregar. Intenta nuevamente.');
+  }finally{
+    btn.disabled=false; btn.textContent='Agregar';
+  }
+}
+
 tbody.addEventListener('click',e=>{const b=e.target.closest('.save'); if(b) saveRow(b.closest('tr'));});
 search.addEventListener('input',render);
+addBtn.addEventListener('click',()=>{
+  addPanel.classList.toggle('open');
+  if(addPanel.classList.contains('open')) setTimeout(()=>$('#newName').focus(),50);
+});
+addForm.addEventListener('submit',addMissionary);
 
 function unlock(pw){
   if(pw!==PASSWORD){$('#lockError').textContent='Contraseña incorrecta.';return;}

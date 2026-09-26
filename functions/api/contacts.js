@@ -50,7 +50,7 @@ export async function onRequestPost({ request, env }) {
     await ensureTable(env);
     const body = await request.json();
     const missionaryId = Number(body.missionary_id);
-    if (!Number.isInteger(missionaryId) || missionaryId < 1 || missionaryId > 344) {
+    if (!Number.isInteger(missionaryId) || missionaryId < 1 || missionaryId > 2147483647) {
       return json({ error: 'missionary_id inválido' }, 400);
     }
 
