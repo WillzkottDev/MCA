@@ -1,37 +1,44 @@
-# MCA · Directorio de Misioneros — Cloudflare D1
+# MCA · Cloudflare Worker + D1
 
-Esta versión usa **Cloudflare D1 exclusivamente**. No utiliza `localStorage` como respaldo.
+Este proyecto está preparado para el Worker existente `mca` (`mca.will-010.workers.dev`).
 
-## Incluye
-- `index.html`: directorio base de 344 misioneros, buscador, datos de contacto y formulario para agregar misioneros faltantes.
-- `logo-mca.webp`: logo y marca de agua.
-- `functions/api/contacts.js`: API para leer/guardar correo, teléfono, Facebook/Instagram y comentario.
-- `functions/api/missionaries.js`: API para listar y agregar misioneros manualmente.
-- `schema.sql`: tablas `contacts` y `manual_missionaries`.
-- `wrangler.toml`: binding `DB` configurado para la base D1 indicada.
+## Estructura
 
-## Base D1 configurada
+- `src/index.js`: API Worker (`/api/health`, `/api/contacts`, `/api/missionaries`).
+- `public/index.html`: directorio de misioneros.
+- `public/logo-mca.webp`: logo y marca de agua.
+- `wrangler.jsonc`: Worker, Static Assets y binding D1 `DB`.
+- `schema.sql`: referencia del esquema; el Worker crea las tablas automáticamente si no existen.
+
+## D1 incluido
+
 - Binding: `DB`
-- Database name: `mca-directorio`
+- Database: `mca-directorio`
 - Database ID: `9f6276fa-516e-4e01-b629-afaa65a31520`
 
-## Variable recomendada
-En Cloudflare, mantén la variable/secret del proyecto:
+## Desplegar al Worker existente
 
-`MCA_PASSWORD = MCA`
-
-## Cómo funciona “Agregar misionero”
-En la parte superior del directorio aparece **＋ Agregar misionero**. El formulario pide nombre, país y año como campos obligatorios, y permite ingresar también correo, teléfono, Facebook/Instagram y un saludo.
-
-Los registros nuevos quedan en la tabla D1 `manual_missionaries` y aparecen automáticamente mezclados con los 344 registros base. Sus datos de contacto quedan en `contacts`.
-
-No necesitas ejecutar `schema.sql` manualmente si ya tienes la base: las Functions crean las tablas que falten al primer uso.
-
-## Despliegue
 Desde esta carpeta:
 
 ```powershell
-npx wrangler pages deploy .
+npx wrangler login
+npx wrangler deploy
 ```
 
-Después abre la página. Arriba debe aparecer **Cloudflare D1 · conectado**.
+No uses `wrangler pages deploy`: este proyecto es Workers, no Pages.
+
+La URL seguirá siendo `https://mca.will-010.workers.dev/` siempre que tu cuenta tenga ese subdominio y el Worker se llame `mca`.
+
+## Contraseña
+
+El código acepta `MCA` como valor de respaldo. Si ya tienes el secret `MCA_PASSWORD`, se utilizará ese valor. Para fijarlo desde Wrangler:
+
+```powershell
+npx wrangler secret put MCA_PASSWORD
+```
+
+Cuando pregunte el valor, escribe `MCA`.
+
+## Probar D1
+
+Después del deploy entra al sitio, escribe `MCA`, y el indicador superior debe mostrar `Cloudflare D1 · conectado`.
