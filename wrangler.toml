@@ -1,8 +1,12 @@
-name = "mca-antofagasta"
-pages_build_output_dir = "."
-compatibility_date = "2026-09-26"
+name = "mca-directorio-misioneros"
+compatibility_date = "2026-09-27"
+pages_build_output_dir = "dist"
 
-[[d1_databases]]
-binding = "DB"
-database_name = "mca-directorio"
-database_id = "9f6276fa-516e-4e01-b629-afaa65a31520"
+# Si Cloudflare ya tiene el binding D1 configurado desde el Dashboard,
+# puedes conservarlo allí y no agregar el bloque [[d1_databases]] aquí.
+# Si quieres administrar el binding desde este archivo, descomenta y completa:
+#
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "TU_BASE_D1_EXISTENTE"
+# database_id = "TU_DATABASE_ID_EXISTENTE"

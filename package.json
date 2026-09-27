@@ -1,9 +1,12 @@
 {
-  "name": "mca-directorio-worker",
+  "name": "mca-directorio-misioneros",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "build": "node scripts/build.mjs",
+    "dev": "wrangler pages dev dist",
+    "deploy": "npm run build && wrangler pages deploy dist"
   },
   "devDependencies": {
     "wrangler": "^4.0.0"

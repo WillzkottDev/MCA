@@ -4,13 +4,8 @@ CREATE TABLE IF NOT EXISTS contacts (
   phone TEXT NOT NULL DEFAULT '',
   social TEXT NOT NULL DEFAULT '',
   message TEXT NOT NULL DEFAULT '',
-  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
-CREATE TABLE IF NOT EXISTS manual_missionaries (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  country TEXT NOT NULL,
-  year INTEGER NOT NULL,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+CREATE INDEX IF NOT EXISTS idx_contacts_updated_at
+ON contacts(updated_at);
