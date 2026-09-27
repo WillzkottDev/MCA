@@ -9,3 +9,14 @@ CREATE TABLE IF NOT EXISTS contacts (
 
 CREATE INDEX IF NOT EXISTS idx_contacts_updated_at
 ON contacts(updated_at);
+
+CREATE TABLE IF NOT EXISTS missionaries (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  country TEXT,
+  year INTEGER,
+  updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_missionaries_name
+ON missionaries(name);
