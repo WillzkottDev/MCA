@@ -1,10 +1,9 @@
 name = "mca-directorio-misioneros"
 compatibility_date = "2026-09-27"
-pages_build_output_dir = "dist"
+pages_build_output_dir = "public"
 
-# Si Cloudflare ya tiene el binding D1 configurado desde el Dashboard,
-# puedes conservarlo allí y no agregar el bloque [[d1_databases]] aquí.
-# Si quieres administrar el binding desde este archivo, descomenta y completa:
+# Mantén tu binding D1 existente en Cloudflare con el nombre DB.
+# No recrees la base de datos.
 #
 # [[d1_databases]]
 # binding = "DB"
