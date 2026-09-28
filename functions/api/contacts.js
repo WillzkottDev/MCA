@@ -14,19 +14,7 @@ function authorized(request, env) {
   return received === expected;
 }
 
-async function readFromTable(db, table) {
-  const sql = `SELECT missionary_id, email, phone, social, message FROM ${table} ORDER BY missionary_id`;
-  const result = await db.prepare(sql).all();
-  return result.results || [];
-}
-
-async function detectTable(db) {
-  for (const table of ['contacts', 'missionary_contacts']) {
-    try {
-      await db.prepare(`SELECT missionary_id FROM ${table} LIMIT 1`).all();
-      return table;
-    } catch (_) {}
-  }
+async function ensureContacts(db) {
   await db.prepare(`
     CREATE TABLE IF NOT EXISTS contacts (
       missionary_id INTEGER PRIMARY KEY,
@@ -37,32 +25,51 @@ async function detectTable(db) {
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     )
   `).run();
-  return 'contacts';
 }
 
-export async function onRequestGet(context) {
-  const { request, env } = context;
+export async function onRequestGet({ request, env }) {
   if (!authorized(request, env)) return json({ error: 'Unauthorized' }, 401);
   if (!env.DB) return json({ error: 'Falta binding D1 llamado DB' }, 500);
 
   try {
-    const table = await detectTable(env.DB);
-    const records = await readFromTable(env.DB, table);
-    return json({ ok: true, records });
+    await ensureContacts(env.DB);
+
+    const result = await env.DB.prepare(`
+      SELECT
+        m.id AS missionary_id,
+        m.name,
+        m.country,
+        m.year,
+        COALESCE(c.email, '') AS email,
+        COALESCE(c.phone, '') AS phone,
+        COALESCE(c.social, '') AS social,
+        COALESCE(c.message, '') AS message
+      FROM missionaries m
+      LEFT JOIN contacts c
+        ON c.missionary_id = m.id
+      ORDER BY m.name COLLATE NOCASE
+    `).all();
+
+    return json({ ok: true, records: result.results || [] });
   } catch (error) {
-    return json({ error: error?.message || 'Database error' }, 500);
+    const msg = String(error?.message || 'Database error');
+    if (msg.toLowerCase().includes('no such table') && msg.toLowerCase().includes('missionaries')) {
+      return json({
+        error: 'Falta crear/cargar la tabla missionaries. Ejecuta migration.sql una vez en la consola D1.'
+      }, 500);
+    }
+    return json({ error: msg }, 500);
   }
 }
 
-export async function onRequestPost(context) {
-  const { request, env } = context;
+export async function onRequestPost({ request, env }) {
   if (!authorized(request, env)) return json({ error: 'Unauthorized' }, 401);
   if (!env.DB) return json({ error: 'Falta binding D1 llamado DB' }, 500);
 
   let body;
   try {
     body = await request.json();
-  } catch (_) {
+  } catch {
     return json({ error: 'JSON inválido' }, 400);
   }
 
@@ -77,9 +84,16 @@ export async function onRequestPost(context) {
   const message = String(body.message || '').trim().slice(0, 5000);
 
   try {
-    const table = await detectTable(env.DB);
-    const sql = `
-      INSERT INTO ${table} (missionary_id, email, phone, social, message, updated_at)
+    await ensureContacts(env.DB);
+
+    const exists = await env.DB.prepare(
+      `SELECT id FROM missionaries WHERE id = ? LIMIT 1`
+    ).bind(missionaryId).first();
+
+    if (!exists) return json({ error: 'Misionero no existe en missionaries' }, 404);
+
+    await env.DB.prepare(`
+      INSERT INTO contacts (missionary_id, email, phone, social, message, updated_at)
       VALUES (?, ?, ?, ?, ?, datetime('now'))
       ON CONFLICT(missionary_id) DO UPDATE SET
         email = excluded.email,
@@ -87,26 +101,10 @@ export async function onRequestPost(context) {
         social = excluded.social,
         message = excluded.message,
         updated_at = datetime('now')
-    `;
-    await env.DB.prepare(sql).bind(missionaryId, email, phone, social, message).run();
+    `).bind(missionaryId, email, phone, social, message).run();
+
     return json({ ok: true, missionary_id: missionaryId });
   } catch (error) {
-    // Compatibilidad con una tabla antigua sin columna updated_at.
-    try {
-      const table = await detectTable(env.DB);
-      const fallbackSql = `
-        INSERT INTO ${table} (missionary_id, email, phone, social, message)
-        VALUES (?, ?, ?, ?, ?)
-        ON CONFLICT(missionary_id) DO UPDATE SET
-          email = excluded.email,
-          phone = excluded.phone,
-          social = excluded.social,
-          message = excluded.message
-      `;
-      await env.DB.prepare(fallbackSql).bind(missionaryId, email, phone, social, message).run();
-      return json({ ok: true, missionary_id: missionaryId });
-    } catch (fallbackError) {
-      return json({ error: fallbackError?.message || error?.message || 'Database error' }, 500);
-    }
+    return json({ error: String(error?.message || 'Database error') }, 500);
   }
 }

@@ -1,26 +1,50 @@
-# MCA Directorio — ruta corregida
+# MCA Directorio · versión D1 completa
 
-Esta versión elimina la confusión entre `src/`, `dist/` e `index.html`.
+Esta versión usa `public/index.html` como frontend publicado y D1 como fuente principal
+de los nombres, país, año y datos de contacto.
 
-## Archivo que Cloudflare publica
-`public/index.html`
+## Cloudflare Pages
 
-## Configuración en Cloudflare Pages
 - Framework preset: None
 - Build command: dejar vacío
 - Build output directory: `public`
 - Root directory: dejar vacío
-- Production branch: la rama que uses (normalmente `main`)
+- Binding D1: `DB` apuntando a TU BASE ACTUAL
 
-## Importante
-Mantén el binding D1 existente con nombre `DB`.
-No borres ni recrees la base de datos.
+## Paso obligatorio una sola vez
 
-El frontend ya incluye:
-- pantalla de contraseña
-- contador hasta el 27/09/2026 19:00 Chile
-- microsegundos visuales
-- estilo azul neón
-- enlace Zoom
-- directorio completo
-- conexión a `/api/contacts`
+En Cloudflare → D1 → tu base → Console, ejecuta el archivo:
+
+`migration.sql`
+
+Ese script:
+1. crea `missionaries` si no existe;
+2. conserva la tabla `contacts`;
+3. carga/actualiza los 344 misioneros;
+4. deja el ID 244 como `Reviriego, Lisandro`;
+5. NO elimina los contactos existentes.
+
+También puedes ejecutarlo con Wrangler:
+
+`npx wrangler d1 execute NOMBRE_DE_TU_DB --remote --file=./migration.sql`
+
+## Cambiar un nombre después
+
+Ejemplo:
+
+```sql
+UPDATE missionaries
+SET name = 'Reviriego, Lisandro',
+    updated_at = datetime('now')
+WHERE id = 244;
+```
+
+Al recargar la web, el cambio se verá sin modificar el HTML.
+
+## Estructura
+
+- `public/index.html` → web publicada
+- `functions/api/contacts.js` → lectura de misioneros + contactos y guardado de contactos
+- `schema.sql` → tablas
+- `seed_missionaries.sql` → 344 misioneros
+- `migration.sql` → schema + carga completa en un solo archivo

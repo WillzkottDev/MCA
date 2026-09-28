@@ -1,6 +1,6 @@
 {
-  "name": "mca-directorio-misioneros",
-  "version": "1.0.1",
+  "name": "mca-directorio-d1",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "wrangler pages dev public",

@@ -1,11 +1,7 @@
-name = "mca-directorio-misioneros"
+name = "mca-directorio"
 compatibility_date = "2026-09-27"
 pages_build_output_dir = "public"
 
-# Mantén tu binding D1 existente en Cloudflare con el nombre DB.
-# No recrees la base de datos.
-#
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "TU_BASE_D1_EXISTENTE"
-# database_id = "TU_DATABASE_ID_EXISTENTE"
+# IMPORTANTE:
+# Mantén en Cloudflare Pages el binding D1 llamado exactamente DB
+# apuntando a tu base actual. No hace falta recrearla.
