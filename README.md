@@ -1,22 +1,31 @@
-# MCA Directorio — versión de rescate
+# MCA Directorio — rescate + agregar misionero manual
 
-Esta versión vuelve al frontend que ya funcionaba y evita depender de una sola ruta.
+Esta versión conserva el frontend estable y vuelve a incluir **Agregar misionero**.
 
-El mismo `index.html` está duplicado en:
+## Publicación
+Se incluye el mismo HTML en:
 - `/index.html`
 - `/public/index.html`
 - `/src/index.html`
 
-Así, si tu proyecto actual sigue apuntando a `src`, no queda en blanco.
-También funciona si Cloudflare está configurado para publicar `public`.
+## Agregar misionero
+Dentro del directorio aparece el botón **＋ Agregar misionero**.
 
-## Recomendación inmediata
+Campos:
+- Nombre
+- País
+- Año
 
-Si antes te funcionaba con `src/index.html`, NO cambies todavía la configuración de Cloudflare.
-Sube este repositorio completo y deja el proyecto apuntando igual que antes.
+Si Cloudflare D1 está disponible con binding `DB`, los misioneros agregados se guardan
+en una tabla independiente llamada `manual_missionaries`, creada automáticamente.
+No es necesario ejecutar migraciones SQL.
+
+Si D1 falla, el registro queda como respaldo en `localStorage` del navegador.
 
 ## Importante
+No borra ni modifica los 344 misioneros originales ni la tabla de contactos.
+Los IDs de misioneros agregados manualmente parten desde 1000 para evitar colisiones.
 
-Esta versión NO migra nombres a D1 todavía. Primero recuperamos el sitio estable.
-El apellido de Lisandro ya quedó corregido como `Reviriego, Lisandro`.
-Los datos de contacto siguen usando `/api/contacts` como antes.
+
+## Cambio de esta versión
+Se eliminó completamente el contador y el bloque del evento/Zoom de la pantalla de acceso.
