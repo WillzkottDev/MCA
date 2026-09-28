@@ -1,50 +1,22 @@
-# MCA Directorio · versión D1 completa
+# MCA Directorio — versión de rescate
 
-Esta versión usa `public/index.html` como frontend publicado y D1 como fuente principal
-de los nombres, país, año y datos de contacto.
+Esta versión vuelve al frontend que ya funcionaba y evita depender de una sola ruta.
 
-## Cloudflare Pages
+El mismo `index.html` está duplicado en:
+- `/index.html`
+- `/public/index.html`
+- `/src/index.html`
 
-- Framework preset: None
-- Build command: dejar vacío
-- Build output directory: `public`
-- Root directory: dejar vacío
-- Binding D1: `DB` apuntando a TU BASE ACTUAL
+Así, si tu proyecto actual sigue apuntando a `src`, no queda en blanco.
+También funciona si Cloudflare está configurado para publicar `public`.
 
-## Paso obligatorio una sola vez
+## Recomendación inmediata
 
-En Cloudflare → D1 → tu base → Console, ejecuta el archivo:
+Si antes te funcionaba con `src/index.html`, NO cambies todavía la configuración de Cloudflare.
+Sube este repositorio completo y deja el proyecto apuntando igual que antes.
 
-`migration.sql`
+## Importante
 
-Ese script:
-1. crea `missionaries` si no existe;
-2. conserva la tabla `contacts`;
-3. carga/actualiza los 344 misioneros;
-4. deja el ID 244 como `Reviriego, Lisandro`;
-5. NO elimina los contactos existentes.
-
-También puedes ejecutarlo con Wrangler:
-
-`npx wrangler d1 execute NOMBRE_DE_TU_DB --remote --file=./migration.sql`
-
-## Cambiar un nombre después
-
-Ejemplo:
-
-```sql
-UPDATE missionaries
-SET name = 'Reviriego, Lisandro',
-    updated_at = datetime('now')
-WHERE id = 244;
-```
-
-Al recargar la web, el cambio se verá sin modificar el HTML.
-
-## Estructura
-
-- `public/index.html` → web publicada
-- `functions/api/contacts.js` → lectura de misioneros + contactos y guardado de contactos
-- `schema.sql` → tablas
-- `seed_missionaries.sql` → 344 misioneros
-- `migration.sql` → schema + carga completa en un solo archivo
+Esta versión NO migra nombres a D1 todavía. Primero recuperamos el sitio estable.
+El apellido de Lisandro ya quedó corregido como `Reviriego, Lisandro`.
+Los datos de contacto siguen usando `/api/contacts` como antes.
